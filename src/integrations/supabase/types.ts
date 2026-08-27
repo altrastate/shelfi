@@ -101,12 +101,15 @@ export type Database = {
           cover_url: string | null
           created_at: string
           description: string | null
+          edition: string | null
           id: string
           isbn: string | null
           language: string | null
           published_year: number | null
           publisher_id: string | null
           school_id: string
+          shelf_location: string | null
+          subject: string | null
           subtitle: string | null
           title: string
           updated_at: string
@@ -117,12 +120,15 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          edition?: string | null
           id?: string
           isbn?: string | null
           language?: string | null
           published_year?: number | null
           publisher_id?: string | null
           school_id: string
+          shelf_location?: string | null
+          subject?: string | null
           subtitle?: string | null
           title: string
           updated_at?: string
@@ -133,12 +139,15 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          edition?: string | null
           id?: string
           isbn?: string | null
           language?: string | null
           published_year?: number | null
           publisher_id?: string | null
           school_id?: string
+          shelf_location?: string | null
+          subject?: string | null
           subtitle?: string | null
           title?: string
           updated_at?: string
@@ -356,8 +365,10 @@ export type Database = {
           acquired_on: string | null
           barcode: string | null
           book_id: string
+          condition: string
           created_at: string
           id: string
+          notes: string | null
           school_id: string
           shelf_location: string | null
           status: Database["public"]["Enums"]["copy_status"]
@@ -367,8 +378,10 @@ export type Database = {
           acquired_on?: string | null
           barcode?: string | null
           book_id: string
+          condition?: string
           created_at?: string
           id?: string
+          notes?: string | null
           school_id: string
           shelf_location?: string | null
           status?: Database["public"]["Enums"]["copy_status"]
@@ -378,8 +391,10 @@ export type Database = {
           acquired_on?: string | null
           barcode?: string | null
           book_id?: string
+          condition?: string
           created_at?: string
           id?: string
+          notes?: string | null
           school_id?: string
           shelf_location?: string | null
           status?: Database["public"]["Enums"]["copy_status"]
@@ -761,6 +776,15 @@ export type Database = {
       is_school_admin: { Args: { _school_id: string }; Returns: boolean }
       is_school_staff: { Args: { _school_id: string }; Returns: boolean }
       is_system_admin: { Args: never; Returns: boolean }
+      issue_copy: {
+        Args: {
+          _borrower_id: string
+          _copy_id: string
+          _due_at: string
+          _notes?: string
+        }
+        Returns: string
+      }
       request_school_join: {
         Args: {
           _full_name?: string
@@ -772,8 +796,20 @@ export type Database = {
           school_name: string
         }[]
       }
+      return_copy: {
+        Args: { _copy_id: string; _note?: string; _outcome?: string }
+        Returns: string
+      }
       review_join_request: {
         Args: { _approve: boolean; _note?: string; _request_id: string }
+        Returns: undefined
+      }
+      set_copy_status: {
+        Args: {
+          _copy_id: string
+          _note?: string
+          _status: Database["public"]["Enums"]["copy_status"]
+        }
         Returns: undefined
       }
     }
@@ -787,6 +823,7 @@ export type Database = {
         | "damaged"
         | "lost"
         | "retired"
+        | "archived"
       membership_status: "pending" | "active" | "suspended" | "rejected"
       resource_source: "school" | "shelfi_catalogue"
     }
@@ -925,6 +962,7 @@ export const Constants = {
         "damaged",
         "lost",
         "retired",
+        "archived",
       ],
       membership_status: ["pending", "active", "suspended", "rejected"],
       resource_source: ["school", "shelfi_catalogue"],
