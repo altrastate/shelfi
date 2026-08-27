@@ -172,6 +172,12 @@ export function AskShelfiPanel({
           </div>
         ) : null}
 
+        {(thread.data?.messages.length ?? 0) > 0 ? (
+          <p className="text-center text-[11px] text-muted-foreground">
+            Continuing your earlier conversation about this book
+          </p>
+        ) : null}
+
         {messages.map((m) => (
           <div
             key={m.id}
