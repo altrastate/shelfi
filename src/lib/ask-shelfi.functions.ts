@@ -171,7 +171,14 @@ export const askShelfi = createServerFn({ method: "POST" })
           "Lovable-API-Key": apiKey,
           "X-Lovable-AIG-SDK": "fetch",
         },
-        body: JSON.stringify({ model: MODEL, messages, max_tokens: 600 }),
+        // Ample budget: this model spends part of it on internal reasoning, and a
+        // tight cap returns an empty answer.
+        body: JSON.stringify({
+          model: MODEL,
+          messages,
+          max_tokens: 1500,
+          reasoning_effort: "low",
+        }),
       });
 
       if (!res.ok) {
