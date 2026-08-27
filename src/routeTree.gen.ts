@@ -22,6 +22,7 @@ import { Route as AuthenticatedLoansRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
 import { Route as AuthenticatedMyShelfRouteImport } from './routes/_authenticated/my-shelf'
 import { Route as AuthenticatedPlatformRouteImport } from './routes/_authenticated/platform'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedBooksBookIdRouteImport } from './routes/_authenticated/books.$bookId'
 import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue_.$resourceId'
 import { Route as AuthenticatedFamilyStudentIdRouteImport } from './routes/_authenticated/family_.$studentId'
@@ -92,6 +93,11 @@ const AuthenticatedPlatformRoute = AuthenticatedPlatformRouteImport.update({
   path: '/platform',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBooksBookIdRoute =
   AuthenticatedBooksBookIdRouteImport.update({
     id: '/books/$bookId',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/manage': typeof AuthenticatedManageRoute
   '/my-shelf': typeof AuthenticatedMyShelfRoute
   '/platform': typeof AuthenticatedPlatformRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/manage': typeof AuthenticatedManageRoute
   '/my-shelf': typeof AuthenticatedMyShelfRoute
   '/platform': typeof AuthenticatedPlatformRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/manage': typeof AuthenticatedManageRoute
   '/_authenticated/my-shelf': typeof AuthenticatedMyShelfRoute
   '/_authenticated/platform': typeof AuthenticatedPlatformRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/_authenticated/catalogue_/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/_authenticated/family_/$studentId': typeof AuthenticatedFamilyStudentIdRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/manage'
     | '/my-shelf'
     | '/platform'
+    | '/reports'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
     | '/family/$studentId'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/manage'
     | '/my-shelf'
     | '/platform'
+    | '/reports'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
     | '/family/$studentId'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manage'
     | '/_authenticated/my-shelf'
     | '/_authenticated/platform'
+    | '/_authenticated/reports'
     | '/_authenticated/books/$bookId'
     | '/_authenticated/catalogue_/$resourceId'
     | '/_authenticated/family_/$studentId'
@@ -330,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlatformRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/books/$bookId': {
       id: '/_authenticated/books/$bookId'
       path: '/books/$bookId'
@@ -372,6 +391,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
   AuthenticatedMyShelfRoute: typeof AuthenticatedMyShelfRoute
   AuthenticatedPlatformRoute: typeof AuthenticatedPlatformRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedBooksBookIdRoute: typeof AuthenticatedBooksBookIdRoute
   AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
   AuthenticatedFamilyStudentIdRoute: typeof AuthenticatedFamilyStudentIdRoute
@@ -389,6 +409,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedManageRoute: AuthenticatedManageRoute,
   AuthenticatedMyShelfRoute: AuthenticatedMyShelfRoute,
   AuthenticatedPlatformRoute: AuthenticatedPlatformRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedBooksBookIdRoute: AuthenticatedBooksBookIdRoute,
   AuthenticatedCatalogueResourceIdRoute: AuthenticatedCatalogueResourceIdRoute,
   AuthenticatedFamilyStudentIdRoute: AuthenticatedFamilyStudentIdRoute,
