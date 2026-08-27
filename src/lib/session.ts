@@ -50,7 +50,7 @@ export async function fetchSession(): Promise<SessionProfile | null> {
   return {
     id: user.id,
     email: user.email ?? null,
-    fullName: profile?.['full_name'] || (user.user_metadata?.full_name as string) || "",
+    fullName: profile?.['full_name'] || (user.user_metadata?.['full_name'] as string) || "",
     schoolId: profile?.school_id ?? null,
     status: (profile?.status as SessionProfile["status"]) ?? "pending",
     roles: (rolesRes.data ?? []).map((r) => r.role as AppRole),
