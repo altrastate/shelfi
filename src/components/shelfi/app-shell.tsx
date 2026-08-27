@@ -9,31 +9,32 @@ import {
   Building2,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { primaryRole, roleLabel, useSession } from "@/lib/session";
+import { isActiveStaff, primaryRole, roleLabel, useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string; icon: typeof BookOpen };
-
-const baseNav: NavItem[] = [
-  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { to: "/library", label: "Library", icon: Library },
-  { to: "/catalogue", label: "Digital", icon: Sparkles },
-  { to: "/shelf", label: "My Shelf", icon: BookOpen },
-];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const roles = session?.roles ?? [];
   const role = primaryRole(roles);
+  const staff = isActiveStaff(session);
+  const platformAdmin = roles.includes("system_admin");
+  const activeMember = session?.status === "active" && Boolean(session?.schoolId);
 
-  const nav: NavItem[] = [...baseNav];
-  if (roles.includes("school_admin")) {
-    nav.push({ to: "/manage", label: "Manage", icon: Users });
+  const nav: NavItem[] = [{ to: "/dashboard", label: "Home", icon: LayoutDashboard }];
+  if (activeMember && !staff) {
+    nav.push(
+      { to: "/library", label: "Library", icon: Library },
+      { to: "/catalogue", label: "Digital", icon: Sparkles },
+      { to: "/shelf", label: "My Shelf", icon: BookOpen },
+    );
+  } else if (staff) {
+    nav.push({ to: "/library", label: "Library", icon: Library });
   }
-  if (roles.includes("system_admin")) {
-    nav.push({ to: "/platform", label: "Platform", icon: Building2 });
-  }
+  if (staff) nav.push({ to: "/manage", label: "Manage", icon: Users });
+  if (platformAdmin) nav.push({ to: "/platform", label: "Platform", icon: Building2 });
   nav.push({ to: "/account", label: "Account", icon: User });
 
   return (
@@ -48,7 +49,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
           <div className="text-right">
             <p className="text-xs font-medium text-foreground">
-              {session?.school?.name ?? "No school yet"}
+              {platformAdmin
+                ? "Shelfi platform"
+                : (session?.school?.name ?? "No school yet")}
             </p>
             <p className="text-[11px] text-muted-foreground">{roleLabel[role]}</p>
           </div>

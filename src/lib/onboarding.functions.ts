@@ -2,57 +2,35 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Students never self-register into a school. They request access with a
- * school-issued join code; a librarian must approve them before the profile
- * becomes active.
+ * Nobody self-enrols into a school. A user presents a school-issued join code
+ * and requests either student or librarian access; a school administrator must
+ * approve it. All authorization lives in the `request_school_join` security
+ * definer function, executed as the signed-in user.
  */
 export const requestSchoolAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { joinCode: string; fullName?: string }) => {
-    const joinCode = String(data?.joinCode ?? "")
-      .trim()
-      .toUpperCase();
+  .inputValidator((data: { joinCode: string; role: "student" | "librarian"; fullName?: string }) => {
+    const joinCode = String(data?.joinCode ?? "").trim().toUpperCase();
     if (joinCode.length < 4) throw new Error("Enter a valid join code.");
-    return { joinCode, fullName: String(data?.fullName ?? "").trim() };
+    const role: "student" | "librarian" = data?.role === "librarian" ? "librarian" : "student";
+    return { joinCode, role, fullName: String(data?.fullName ?? "").trim() };
   })
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await context.supabase.rpc("request_school_join", {
+      _join_code: data.joinCode,
+      _role: data.role,
+      _full_name: data.fullName,
+    });
 
-    const { data: school, error } = await supabaseAdmin
-      .from("schools")
-      .select("id, name, is_active")
-      .eq("join_code", data.joinCode)
-      .maybeSingle();
+    if (error) {
+      const message = error.message.includes("not recognised")
+        ? "That join code is not recognised."
+        : error.message.includes("Administrator accounts")
+          ? "Administrator accounts cannot submit join requests."
+          : "Could not submit your request. Please try again.";
+      throw new Error(message);
+    }
 
-    if (error) throw new Error("Could not check that join code right now.");
-    if (!school || !school['is_active']) throw new Error("That join code is not recognised.");
-
-    const profileUpdate = {
-      school_id: school['id'] as string,
-      status: "pending" as const,
-      ...(data.fullName ? { full_name: data.fullName } : {}),
-    };
-
-    const { error: profileError } = await supabaseAdmin
-      .from("profiles")
-      .update(profileUpdate)
-      .eq("id", context.userId);
-    if (profileError) throw new Error("Could not update your profile.");
-
-    const { error: requestError } = await supabaseAdmin
-      .from("school_join_requests")
-      .upsert(
-        { school_id: school['id'] as string, user_id: context.userId, status: "pending" },
-        { onConflict: "school_id,user_id" },
-      );
-    if (requestError) throw new Error("Could not submit your request.");
-
-    await supabaseAdmin
-      .from("user_roles")
-      .upsert(
-        { user_id: context.userId, school_id: school['id'] as string, role: "student" },
-        { onConflict: "user_id,role,school_id" },
-      );
-
-    return { schoolName: school['name'] as string };
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    return { schoolName: (row?.['school_name'] as string) ?? "your school", role: data.role };
   });

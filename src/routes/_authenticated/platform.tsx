@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Plus } from "lucide-react";
 import { useState } from "react";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/session";
 import { createSchool } from "@/lib/schools.functions";
+import { assignSchoolAdmin } from "@/lib/admin.functions";
 import { EmptyState, ErrorState, LoadingList, PageHeader } from "@/components/shelfi/states";
 import { Button } from "@/components/ui/button";
 import {
@@ -185,22 +187,88 @@ function PlatformPage() {
       ) : (
         <ul className="space-y-3">
           {schools.data!.map((s) => (
-            <li key={s.id} className="shelfi-surface flex items-center gap-3 p-4">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {s.slug} · {s.is_active ? "active" : "inactive"}
-                </p>
+            <li key={s.id} className="shelfi-surface space-y-3 p-4">
+              <div className="flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {s.slug} · {s.is_active ? "active" : "inactive"}
+                  </p>
+                </div>
+                {s.join_code ? (
+                  <span className="font-mono text-xs tracking-widest text-primary">
+                    {s.join_code}
+                  </span>
+                ) : null}
               </div>
-              {s.join_code ? (
-                <span className="font-mono text-xs tracking-widest text-primary">
-                  {s.join_code}
-                </span>
-              ) : null}
+              <AssignAdmin schoolId={s.id} schoolName={s.name} />
             </li>
           ))}
+
         </ul>
       )}
     </>
+  );
+}
+
+/** Platform-level designation of a school's administrator (server-verified). */
+function AssignAdmin({ schoolId, schoolName }: { schoolId: string; schoolName: string }) {
+  const assign = useServerFn(assignSchoolAdmin);
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await assign({ data: { schoolId, email } });
+      toast.success(`${email} is now the school administrator for ${schoolName}`);
+      setEmail("");
+      setOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ["shelfi"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not assign that administrator.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="w-full">
+          Assign school administrator
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>School administrator</DialogTitle>
+          <DialogDescription>
+            Designate the responsible administrator for {schoolName}. They must already have a
+            Shelfi account.
+          </DialogDescription>
+        </DialogHeader>
+        <form className="space-y-4" onSubmit={submit}>
+          <div className="space-y-2">
+            <Label htmlFor={`admin-email-${schoolId}`}>Account email</Label>
+            <Input
+              id={`admin-email-${schoolId}`}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="librarian@school.org"
+              required
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={busy || !email.includes("@")}>
+              {busy ? "Assigning…" : "Assign administrator"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
