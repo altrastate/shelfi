@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS borrowings_school_borrowed_idx ON public.borrowings USING btree (school_id, borrowed_at DESC);
+CREATE INDEX IF NOT EXISTS reading_progress_school_read_idx ON public.reading_progress USING btree (school_id, last_read_at DESC);
