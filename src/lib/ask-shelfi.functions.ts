@@ -230,7 +230,8 @@ type UsageArgs = {
 
 /** Lightweight usage trail so limits/reporting can be added later. */
 async function logUsage(
-  supabase: { from: (t: string) => { insert: (v: unknown) => Promise<unknown> } },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   args: UsageArgs,
 ): Promise<void> {
   try {
