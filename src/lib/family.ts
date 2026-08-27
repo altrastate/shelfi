@@ -62,7 +62,7 @@ export async function fetchMyChildren(): Promise<ChildLink[]> {
   const { data, error } = await supabase
     .from("parent_student_relationships")
     .select(
-      "id, student_user_id, school_id, status, relationship_type, created_at, approved_at, profiles!parent_student_relationships_student_user_id_fkey(full_name, year_group)",
+      "id, student_user_id, school_id, status, relationship_type, created_at, approved_at, profiles!psr_student_profile_fkey(full_name, year_group)",
     )
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -213,7 +213,7 @@ export async function fetchMyGuardians(): Promise<
   const { data, error } = await supabase
     .from("parent_student_relationships")
     .select(
-      "id, status, relationship_type, profiles!parent_student_relationships_parent_user_id_fkey(full_name)",
+      "id, status, relationship_type, profiles!psr_parent_profile_fkey(full_name)",
     )
     .order("created_at", { ascending: false });
   if (error) throw error;
