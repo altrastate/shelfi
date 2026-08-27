@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { requestSchoolAccess } from "@/lib/onboarding.functions";
-import { primaryRole, roleLabel, useSession } from "@/lib/session";
+import { isActiveStaff, isParent, isPlatformAdmin, primaryRole, roleLabel, useSession } from "@/lib/session";
+import {
+  GuardianCodeSection,
+  ParentConnectionsSection,
+} from "@/components/shelfi/family-account";
 import { PageHeader } from "@/components/shelfi/states";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +54,13 @@ function AccountPage() {
     setStudentIdentifier(session.studentIdentifier ?? "");
   }, [session?.id, session?.fullName, session?.yearGroup, session?.studentIdentifier]);
 
-  const needsSchool = !session?.schoolId || session.status === "rejected";
+  const parent = isParent(session);
+  const isStudent = (session?.roles ?? []).includes("student");
+  const needsSchool = !parent && (!session?.schoolId || session.status === "rejected");
+  // A guardian never joins a school directly; they connect to a child instead.
+  const canConnectAsGuardian =
+    parent ||
+    (!isStudent && !isActiveStaff(session) && !isPlatformAdmin(session) && !session?.schoolId);
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
@@ -166,6 +176,10 @@ function AccountPage() {
           </Button>
         </form>
       </section>
+
+      {canConnectAsGuardian ? <ParentConnectionsSection /> : null}
+
+      {isStudent && session?.status === "active" ? <GuardianCodeSection /> : null}
 
       {needsSchool ? (
         <section className="shelfi-surface mt-4 p-5">

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "system_admin" | "school_admin" | "librarian" | "student";
+export type AppRole = "system_admin" | "school_admin" | "librarian" | "student" | "parent";
 export type MembershipStatus = "pending" | "active" | "suspended" | "rejected";
 
 export type SchoolSummary = {
@@ -84,6 +84,7 @@ export function primaryRole(roles: AppRole[]): AppRole {
   if (roles.includes("system_admin")) return "system_admin";
   if (roles.includes("school_admin")) return "school_admin";
   if (roles.includes("librarian")) return "librarian";
+  if (roles.includes("parent")) return "parent";
   return "student";
 }
 
@@ -92,6 +93,7 @@ export const roleLabel: Record<AppRole, string> = {
   school_admin: "School administrator",
   librarian: "Librarian",
   student: "Student",
+  parent: "Parent / guardian",
 };
 
 export function isPlatformAdmin(session?: SessionProfile | null) {
@@ -100,6 +102,11 @@ export function isPlatformAdmin(session?: SessionProfile | null) {
 
 export function isSchoolAdmin(session?: SessionProfile | null) {
   return (session?.roles.includes("school_admin") ?? false) && Boolean(session?.schoolId);
+}
+
+/** A parent/guardian account: read-only family access, never school staff. */
+export function isParent(session?: SessionProfile | null) {
+  return session?.roles.includes("parent") ?? false;
 }
 
 /** Approved school staff: school administrator or active librarian. */
@@ -114,5 +121,6 @@ export function homeRouteFor(session?: SessionProfile | null): string {
   if (!session) return "/auth";
   if (isPlatformAdmin(session)) return "/platform";
   if (isSchoolAdmin(session)) return "/manage";
+  if (isParent(session)) return "/family";
   return "/dashboard";
 }

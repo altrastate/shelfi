@@ -16,6 +16,7 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCatalogueRouteImport } from './routes/_authenticated/catalogue'
 import { Route as AuthenticatedCirculationRouteImport } from './routes/_authenticated/circulation'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFamilyRouteImport } from './routes/_authenticated/family'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedLoansRouteImport } from './routes/_authenticated/loans'
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedMyShelfRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlatformRouteImport } from './routes/_authenticated/platform'
 import { Route as AuthenticatedBooksBookIdRouteImport } from './routes/_authenticated/books.$bookId'
 import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue_.$resourceId'
+import { Route as AuthenticatedFamilyStudentIdRouteImport } from './routes/_authenticated/family_.$studentId'
 import { Route as AuthenticatedReadResourceIdRouteImport } from './routes/_authenticated/read.$resourceId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -58,6 +60,11 @@ const AuthenticatedCirculationRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFamilyRoute = AuthenticatedFamilyRouteImport.update({
+  id: '/family',
+  path: '/family',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
@@ -97,6 +104,12 @@ const AuthenticatedCatalogueResourceIdRoute =
     path: '/catalogue/$resourceId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFamilyStudentIdRoute =
+  AuthenticatedFamilyStudentIdRouteImport.update({
+    id: '/family_/$studentId',
+    path: '/family/$studentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedReadResourceIdRoute =
   AuthenticatedReadResourceIdRouteImport.update({
     id: '/read/$resourceId',
@@ -111,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/family': typeof AuthenticatedFamilyRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -118,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/platform': typeof AuthenticatedPlatformRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRoutesByTo {
@@ -127,6 +142,7 @@ export interface FileRoutesByTo {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/family': typeof AuthenticatedFamilyRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -134,6 +150,7 @@ export interface FileRoutesByTo {
   '/platform': typeof AuthenticatedPlatformRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRoutesById {
@@ -145,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/catalogue': typeof AuthenticatedCatalogueRoute
   '/_authenticated/circulation': typeof AuthenticatedCirculationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/family': typeof AuthenticatedFamilyRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/loans': typeof AuthenticatedLoansRoute
   '/_authenticated/manage': typeof AuthenticatedManageRoute
@@ -152,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/platform': typeof AuthenticatedPlatformRoute
   '/_authenticated/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/_authenticated/catalogue_/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/_authenticated/family_/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/_authenticated/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRouteTypes {
@@ -163,6 +182,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/circulation'
     | '/dashboard'
+    | '/family'
     | '/library'
     | '/loans'
     | '/manage'
@@ -170,6 +190,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
+    | '/family/$studentId'
     | '/read/$resourceId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -179,6 +200,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/circulation'
     | '/dashboard'
+    | '/family'
     | '/library'
     | '/loans'
     | '/manage'
@@ -186,6 +208,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
+    | '/family/$studentId'
     | '/read/$resourceId'
   id:
     | '__root__'
@@ -196,6 +219,7 @@ export interface FileRouteTypes {
     | '/_authenticated/catalogue'
     | '/_authenticated/circulation'
     | '/_authenticated/dashboard'
+    | '/_authenticated/family'
     | '/_authenticated/library'
     | '/_authenticated/loans'
     | '/_authenticated/manage'
@@ -203,6 +227,7 @@ export interface FileRouteTypes {
     | '/_authenticated/platform'
     | '/_authenticated/books/$bookId'
     | '/_authenticated/catalogue_/$resourceId'
+    | '/_authenticated/family_/$studentId'
     | '/_authenticated/read/$resourceId'
   fileRoutesById: FileRoutesById
 }
@@ -263,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/family': {
+      id: '/_authenticated/family'
+      path: '/family'
+      fullPath: '/family'
+      preLoaderRoute: typeof AuthenticatedFamilyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/library': {
       id: '/_authenticated/library'
       path: '/library'
@@ -312,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCatalogueResourceIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/family_/$studentId': {
+      id: '/_authenticated/family_/$studentId'
+      path: '/family/$studentId'
+      fullPath: '/family/$studentId'
+      preLoaderRoute: typeof AuthenticatedFamilyStudentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/read/$resourceId': {
       id: '/_authenticated/read/$resourceId'
       path: '/read/$resourceId'
@@ -327,6 +366,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCatalogueRoute: typeof AuthenticatedCatalogueRoute
   AuthenticatedCirculationRoute: typeof AuthenticatedCirculationRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFamilyRoute: typeof AuthenticatedFamilyRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedLoansRoute: typeof AuthenticatedLoansRoute
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
@@ -334,6 +374,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlatformRoute: typeof AuthenticatedPlatformRoute
   AuthenticatedBooksBookIdRoute: typeof AuthenticatedBooksBookIdRoute
   AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
+  AuthenticatedFamilyStudentIdRoute: typeof AuthenticatedFamilyStudentIdRoute
   AuthenticatedReadResourceIdRoute: typeof AuthenticatedReadResourceIdRoute
 }
 
@@ -342,6 +383,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCatalogueRoute: AuthenticatedCatalogueRoute,
   AuthenticatedCirculationRoute: AuthenticatedCirculationRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFamilyRoute: AuthenticatedFamilyRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedLoansRoute: AuthenticatedLoansRoute,
   AuthenticatedManageRoute: AuthenticatedManageRoute,
@@ -349,6 +391,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlatformRoute: AuthenticatedPlatformRoute,
   AuthenticatedBooksBookIdRoute: AuthenticatedBooksBookIdRoute,
   AuthenticatedCatalogueResourceIdRoute: AuthenticatedCatalogueResourceIdRoute,
+  AuthenticatedFamilyStudentIdRoute: AuthenticatedFamilyStudentIdRoute,
   AuthenticatedReadResourceIdRoute: AuthenticatedReadResourceIdRoute,
 }
 

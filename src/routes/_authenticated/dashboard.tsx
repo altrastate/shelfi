@@ -2,7 +2,7 @@ import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Clock, Library, ShieldX, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { isActiveStaff, primaryRole, roleLabel, useSession } from "@/lib/session";
+import { isActiveStaff, isParent, primaryRole, roleLabel, useSession } from "@/lib/session";
 import {
   RESOURCE_CARD_COLUMNS,
   fetchProgressList,
@@ -36,6 +36,11 @@ function Dashboard() {
   // Platform administration is a platform-level surface, not a school one.
   if (session?.roles.includes("system_admin")) {
     return <Navigate to="/platform" replace />;
+  }
+
+  // Guardians have their own family surface, not the student library home.
+  if (isParent(session)) {
+    return <Navigate to="/family" replace />;
   }
 
   if (!session?.schoolId) {
