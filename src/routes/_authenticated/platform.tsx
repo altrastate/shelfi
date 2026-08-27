@@ -1,9 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Building2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Building2, Plus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/session";
+import { createSchool } from "@/lib/schools.functions";
 import { EmptyState, ErrorState, LoadingList, PageHeader } from "@/components/shelfi/states";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/_authenticated/platform")({
   head: () => ({
@@ -22,6 +37,13 @@ export const Route = createFileRoute("/_authenticated/platform")({
 function PlatformPage() {
   const { data: session } = useSession();
   const isSystemAdmin = session?.roles.includes("system_admin") ?? false;
+  const queryClient = useQueryClient();
+
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
 
   const schools = useQuery({
     queryKey: ["shelfi", "schools"],
@@ -33,6 +55,24 @@ function PlatformPage() {
         .order("name");
       if (error) throw error;
       return data ?? [];
+    },
+  });
+
+  const create = useMutation({
+    mutationFn: () => createSchool({ data: { name, city, country, contactEmail } }),
+    onSuccess: async (school) => {
+      toast.success(`${school.name} created`, {
+        description: `Join code: ${school.join_code}`,
+      });
+      setOpen(false);
+      setName("");
+      setCity("");
+      setCountry("");
+      setContactEmail("");
+      await queryClient.invalidateQueries({ queryKey: ["shelfi", "schools"] });
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Could not create the school.");
     },
   });
 
@@ -49,9 +89,88 @@ function PlatformPage() {
     );
   }
 
+  const addSchoolButton = (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5">
+          <Plus className="size-4" />
+          Add School
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add a school</DialogTitle>
+          <DialogDescription>
+            Create a new school on Shelfi. A join code is generated so the school can invite
+            students and librarians.
+          </DialogDescription>
+        </DialogHeader>
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            create.mutate();
+          }}
+        >
+          <div className="space-y-2">
+            <Label htmlFor="school-name">School name</Label>
+            <Input
+              id="school-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Greenwood High School"
+              required
+              minLength={2}
+              autoFocus
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="school-city">City</Label>
+              <Input
+                id="school-city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="school-country">Country</Label>
+              <Input
+                id="school-country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="school-email">Contact email</Label>
+            <Input
+              id="school-email"
+              type="email"
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
+              placeholder="Optional"
+            />
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={create.isPending || name.trim().length < 2}>
+              {create.isPending ? "Creating…" : "Create school"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <>
-      <PageHeader title="Platform" description="Schools on Shelfi and their access." />
+      <PageHeader
+        title="Platform"
+        description="Schools on Shelfi and their access."
+        action={addSchoolButton}
+      />
       {schools.isLoading ? (
         <LoadingList />
       ) : schools.isError ? (
@@ -60,7 +179,8 @@ function PlatformPage() {
         <EmptyState
           icon={<Building2 className="size-5" />}
           title="No schools yet"
-          description="Schools you onboard onto Shelfi will be listed here with their join codes and status."
+          description="Create the first school to give it a join code and start onboarding its library."
+          action={addSchoolButton}
         />
       ) : (
         <ul className="space-y-3">
