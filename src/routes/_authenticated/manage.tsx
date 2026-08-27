@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Users } from "lucide-react";
+import { Users, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { isActiveStaff, isSchoolAdmin, roleLabel, useSession } from "@/lib/session";
 import { listSchoolJoinRequests } from "@/lib/staff.functions";
+import { listParentLinkRequests } from "@/lib/family.functions";
+import { familyKeys, relationshipLabel } from "@/lib/family";
 import { EmptyState, ErrorState, LoadingList, PageHeader } from "@/components/shelfi/states";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -56,6 +58,36 @@ function ManagePage() {
     enabled: staff,
     queryFn: () => fetchRequests(),
   });
+
+  const fetchParentLinks = useServerFn(listParentLinkRequests);
+  const parentLinks = useQuery({
+    queryKey: familyKeys.requests(session?.schoolId),
+    enabled: staff,
+    queryFn: () => fetchParentLinks(),
+  });
+
+  async function reviewParentLink(id: string, approve: boolean) {
+    const { error } = await supabase.rpc("review_parent_link", {
+      _relationship_id: id,
+      _approve: approve,
+    });
+    if (error) {
+      toast.error(error.message.replace(/^.*ERROR:\s*/, "") || "Could not update that request.");
+      return;
+    }
+    toast.success(approve ? "Guardian connected" : "Request rejected");
+    await queryClient.invalidateQueries({ queryKey: ["shelfi"] });
+  }
+
+  async function revokeParentLink(id: string) {
+    const { error } = await supabase.rpc("revoke_parent_link", { _relationship_id: id });
+    if (error) {
+      toast.error(error.message.replace(/^.*ERROR:\s*/, "") || "Could not revoke that connection.");
+      return;
+    }
+    toast.success("Connection revoked");
+    await queryClient.invalidateQueries({ queryKey: ["shelfi"] });
+  }
 
   const members = useQuery({
     queryKey: ["shelfi", "members", session?.schoolId],
@@ -193,6 +225,53 @@ function ManagePage() {
           </ul>
         </>
       ) : null}
+
+      <h2 className="mb-3 mt-8 text-base">Guardian connections</h2>
+      {parentLinks.isLoading ? (
+        <LoadingList />
+      ) : parentLinks.isError ? (
+        <ErrorState />
+      ) : (parentLinks.data ?? []).length === 0 ? (
+        <EmptyState
+          icon={<Heart className="size-5" />}
+          title="No guardian requests"
+          description="Parent and guardian connection requests for your students appear here."
+        />
+      ) : (
+        <ul className="space-y-3">
+          {parentLinks.data!.map((p) => (
+            <li key={p.id} className="shelfi-surface space-y-3 p-4">
+              <div>
+                <p className="text-sm font-semibold text-foreground">{p.parentName}</p>
+                <p className="truncate text-xs text-muted-foreground">{p.parentEmail ?? "\u2014"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {relationshipLabel[p.relationshipType] ?? "Guardian"} of {p.studentName}
+                  {p.studentYearGroup ? ` \u00b7 ${p.studentYearGroup}` : ""} \u00b7{" "}
+                  {new Date(p.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusPill status={p.status} />
+                <span className="flex-1" />
+                {p.status === "pending" ? (
+                  <>
+                    <Button variant="outline" size="sm" onClick={() => reviewParentLink(p.id, false)}>
+                      Reject
+                    </Button>
+                    <Button size="sm" onClick={() => reviewParentLink(p.id, true)}>
+                      Approve
+                    </Button>
+                  </>
+                ) : p.status === "active" ? (
+                  <Button variant="outline" size="sm" onClick={() => revokeParentLink(p.id)}>
+                    Revoke
+                  </Button>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
       <h2 className="mb-3 mt-8 text-base">Members</h2>
       {members.isLoading ? (
