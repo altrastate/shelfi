@@ -6,8 +6,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { isActiveStaff, useSession } from "@/lib/session";
 import {
-  copyStatusLabel,
-  formatDate,
   libraryKeys,
   statusTone,
   type CopyStatus,
@@ -541,5 +539,3 @@ function Field({
     </div>
   );
 }
-
-export { copyStatusLabel, formatDate };
