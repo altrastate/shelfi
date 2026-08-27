@@ -23,6 +23,7 @@ export const requestSchoolAccess = createServerFn({ method: "POST" })
     });
 
     if (error) {
+      console.error("request_school_join failed", error);
       const message = error.message.includes("not recognised")
         ? "That join code is not recognised."
         : error.message.includes("Administrator accounts")
