@@ -16,6 +16,7 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCatalogueRouteImport } from './routes/_authenticated/catalogue'
 import { Route as AuthenticatedCirculationRouteImport } from './routes/_authenticated/circulation'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFamilyRouteImport } from './routes/_authenticated/family'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedLoansRouteImport } from './routes/_authenticated/loans'
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
@@ -58,6 +59,11 @@ const AuthenticatedCirculationRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFamilyRoute = AuthenticatedFamilyRouteImport.update({
+  id: '/family',
+  path: '/family',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/family': typeof AuthenticatedFamilyRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/family': typeof AuthenticatedFamilyRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/catalogue': typeof AuthenticatedCatalogueRoute
   '/_authenticated/circulation': typeof AuthenticatedCirculationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/family': typeof AuthenticatedFamilyRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/loans': typeof AuthenticatedLoansRoute
   '/_authenticated/manage': typeof AuthenticatedManageRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/circulation'
     | '/dashboard'
+    | '/family'
     | '/library'
     | '/loans'
     | '/manage'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/circulation'
     | '/dashboard'
+    | '/family'
     | '/library'
     | '/loans'
     | '/manage'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/catalogue'
     | '/_authenticated/circulation'
     | '/_authenticated/dashboard'
+    | '/_authenticated/family'
     | '/_authenticated/library'
     | '/_authenticated/loans'
     | '/_authenticated/manage'
@@ -263,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/family': {
+      id: '/_authenticated/family'
+      path: '/family'
+      fullPath: '/family'
+      preLoaderRoute: typeof AuthenticatedFamilyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/library': {
       id: '/_authenticated/library'
       path: '/library'
@@ -327,6 +346,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCatalogueRoute: typeof AuthenticatedCatalogueRoute
   AuthenticatedCirculationRoute: typeof AuthenticatedCirculationRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFamilyRoute: typeof AuthenticatedFamilyRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedLoansRoute: typeof AuthenticatedLoansRoute
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
@@ -342,6 +362,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCatalogueRoute: AuthenticatedCatalogueRoute,
   AuthenticatedCirculationRoute: AuthenticatedCirculationRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFamilyRoute: AuthenticatedFamilyRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedLoansRoute: AuthenticatedLoansRoute,
   AuthenticatedManageRoute: AuthenticatedManageRoute,
