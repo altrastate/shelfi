@@ -58,12 +58,13 @@ export const relationshipLabel: Record<string, string> = {
 };
 
 /** The signed-in guardian's own connections. Profile fields appear only when active. */
-export async function fetchMyChildren(): Promise<ChildLink[]> {
+export async function fetchMyChildren(parentId: string): Promise<ChildLink[]> {
   const { data, error } = await supabase
     .from("parent_student_relationships")
     .select(
       "id, student_user_id, school_id, status, relationship_type, created_at, approved_at, profiles!psr_student_profile_fkey(full_name, year_group)",
     )
+    .eq("parent_user_id", parentId)
     .order("created_at", { ascending: false });
   if (error) throw error;
 
@@ -207,7 +208,7 @@ export async function fetchChildActivity(studentId: string): Promise<ChildActivi
 }
 
 /** Guardians connected to the signed-in student — names and status only. */
-export async function fetchMyGuardians(): Promise<
+export async function fetchMyGuardians(studentId: string): Promise<
   { id: string; status: ParentLinkStatus; relationshipType: string; name: string | null }[]
 > {
   const { data, error } = await supabase
@@ -215,6 +216,7 @@ export async function fetchMyGuardians(): Promise<
     .select(
       "id, status, relationship_type, profiles!psr_parent_profile_fkey(full_name)",
     )
+    .eq("student_user_id", studentId)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map((row) => {
