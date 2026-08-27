@@ -1,0 +1,12 @@
+REVOKE ALL ON FUNCTION public.set_updated_at() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.is_system_admin() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.current_school_id() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.is_school_admin(uuid) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.is_active_member(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_system_admin() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.current_school_id() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_school_admin(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_active_member(uuid) TO authenticated;
