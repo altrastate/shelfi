@@ -257,7 +257,12 @@ function StaffControls({ resource }: { resource: DigitalResource }) {
       const storage = supabase.storage.from(DIGITAL_BUCKET);
       const schoolId = resource.school_id;
       if (!schoolId) throw new Error("This resource isn't owned by your school.");
-      const update: Record<string, unknown> = {};
+      const update: {
+        cover_path?: string;
+        storage_path?: string;
+        file_size?: number;
+        format?: string;
+      } = {};
 
       if (newCover) {
         if (!newCover.type.startsWith("image/")) throw new Error("The cover must be an image.");
@@ -269,7 +274,7 @@ function StaffControls({ resource }: { resource: DigitalResource }) {
           upsert: true,
         });
         if (error) throw new Error("The cover could not be uploaded.");
-        update['cover_path'] = path;
+        update.cover_path = path;
       }
 
       if (replacement) {
@@ -286,9 +291,9 @@ function StaffControls({ resource }: { resource: DigitalResource }) {
           upsert: true,
         });
         if (error) throw new Error("The PDF could not be uploaded.");
-        update['storage_path'] = path;
-        update['file_size'] = replacement.size;
-        update['format'] = "pdf";
+        update.storage_path = path;
+        update.file_size = replacement.size;
+        update.format = "pdf";
       }
 
       if (Object.keys(update).length === 0) throw new Error("Choose a file to upload first.");
