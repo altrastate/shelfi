@@ -22,7 +22,7 @@ import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPlatformRouteImport } from './routes/_authenticated/platform'
 import { Route as AuthenticatedShelfRouteImport } from './routes/_authenticated/shelf'
 import { Route as AuthenticatedBooksBookIdRouteImport } from './routes/_authenticated/books.$bookId'
-import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue.$resourceId'
+import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue_.$resourceId'
 import { Route as AuthenticatedReadResourceIdRouteImport } from './routes/_authenticated/read.$resourceId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -93,9 +93,9 @@ const AuthenticatedBooksBookIdRoute =
   } as any)
 const AuthenticatedCatalogueResourceIdRoute =
   AuthenticatedCatalogueResourceIdRouteImport.update({
-    id: '/$resourceId',
-    path: '/$resourceId',
-    getParentRoute: () => AuthenticatedCatalogueRoute,
+    id: '/catalogue_/$resourceId',
+    path: '/catalogue/$resourceId',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedReadResourceIdRoute =
   AuthenticatedReadResourceIdRouteImport.update({
@@ -108,7 +108,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/catalogue': typeof AuthenticatedCatalogueRouteWithChildren
+  '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -124,7 +124,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/catalogue': typeof AuthenticatedCatalogueRouteWithChildren
+  '/catalogue': typeof AuthenticatedCatalogueRoute
   '/circulation': typeof AuthenticatedCirculationRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/library': typeof AuthenticatedLibraryRoute
@@ -142,7 +142,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
-  '/_authenticated/catalogue': typeof AuthenticatedCatalogueRouteWithChildren
+  '/_authenticated/catalogue': typeof AuthenticatedCatalogueRoute
   '/_authenticated/circulation': typeof AuthenticatedCirculationRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
@@ -151,7 +151,7 @@ export interface FileRoutesById {
   '/_authenticated/platform': typeof AuthenticatedPlatformRoute
   '/_authenticated/shelf': typeof AuthenticatedShelfRoute
   '/_authenticated/books/$bookId': typeof AuthenticatedBooksBookIdRoute
-  '/_authenticated/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/_authenticated/catalogue_/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/_authenticated/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRouteTypes {
@@ -202,7 +202,7 @@ export interface FileRouteTypes {
     | '/_authenticated/platform'
     | '/_authenticated/shelf'
     | '/_authenticated/books/$bookId'
-    | '/_authenticated/catalogue/$resourceId'
+    | '/_authenticated/catalogue_/$resourceId'
     | '/_authenticated/read/$resourceId'
   fileRoutesById: FileRoutesById
 }
@@ -305,12 +305,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBooksBookIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/catalogue/$resourceId': {
-      id: '/_authenticated/catalogue/$resourceId'
-      path: '/$resourceId'
+    '/_authenticated/catalogue_/$resourceId': {
+      id: '/_authenticated/catalogue_/$resourceId'
+      path: '/catalogue/$resourceId'
       fullPath: '/catalogue/$resourceId'
       preLoaderRoute: typeof AuthenticatedCatalogueResourceIdRouteImport
-      parentRoute: typeof AuthenticatedCatalogueRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/read/$resourceId': {
       id: '/_authenticated/read/$resourceId'
@@ -322,24 +322,9 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedCatalogueRouteChildren {
-  AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
-}
-
-const AuthenticatedCatalogueRouteChildren: AuthenticatedCatalogueRouteChildren =
-  {
-    AuthenticatedCatalogueResourceIdRoute:
-      AuthenticatedCatalogueResourceIdRoute,
-  }
-
-const AuthenticatedCatalogueRouteWithChildren =
-  AuthenticatedCatalogueRoute._addFileChildren(
-    AuthenticatedCatalogueRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
-  AuthenticatedCatalogueRoute: typeof AuthenticatedCatalogueRouteWithChildren
+  AuthenticatedCatalogueRoute: typeof AuthenticatedCatalogueRoute
   AuthenticatedCirculationRoute: typeof AuthenticatedCirculationRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
@@ -348,12 +333,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlatformRoute: typeof AuthenticatedPlatformRoute
   AuthenticatedShelfRoute: typeof AuthenticatedShelfRoute
   AuthenticatedBooksBookIdRoute: typeof AuthenticatedBooksBookIdRoute
+  AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
   AuthenticatedReadResourceIdRoute: typeof AuthenticatedReadResourceIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
-  AuthenticatedCatalogueRoute: AuthenticatedCatalogueRouteWithChildren,
+  AuthenticatedCatalogueRoute: AuthenticatedCatalogueRoute,
   AuthenticatedCirculationRoute: AuthenticatedCirculationRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
@@ -362,6 +348,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlatformRoute: AuthenticatedPlatformRoute,
   AuthenticatedShelfRoute: AuthenticatedShelfRoute,
   AuthenticatedBooksBookIdRoute: AuthenticatedBooksBookIdRoute,
+  AuthenticatedCatalogueResourceIdRoute: AuthenticatedCatalogueResourceIdRoute,
   AuthenticatedReadResourceIdRoute: AuthenticatedReadResourceIdRoute,
 }
 

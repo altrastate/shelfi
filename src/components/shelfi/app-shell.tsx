@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   User,
   Users,
+  Sparkles,
   Building2,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -27,11 +28,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (activeMember && !staff) {
     nav.push(
       { to: "/library", label: "Library", icon: Library },
+      { to: "/catalogue", label: "Digital", icon: Sparkles },
       { to: "/loans", label: "My loans", icon: BookOpen },
     );
   } else if (staff) {
     nav.push(
       { to: "/library", label: "Library", icon: Library },
+      { to: "/catalogue", label: "Digital", icon: Sparkles },
       { to: "/circulation", label: "Desk", icon: ArrowLeftRight },
     );
   }
