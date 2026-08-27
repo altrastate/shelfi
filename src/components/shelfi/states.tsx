@@ -7,8 +7,8 @@ export function PageHeader({
   action,
 }: {
   title: string;
-  description?: string;
-  action?: ReactNode;
+  description?: string | undefined;
+  action?: ReactNode | undefined;
 }) {
   return (
     <header className="mb-5 flex items-start justify-between gap-3">

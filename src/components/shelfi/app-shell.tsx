@@ -3,7 +3,7 @@ import {
   BookOpen,
   Library,
   LayoutDashboard,
-  Sparkles,
+  ArrowLeftRight,
   User,
   Users,
   Building2,
@@ -27,11 +27,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (activeMember && !staff) {
     nav.push(
       { to: "/library", label: "Library", icon: Library },
-      { to: "/catalogue", label: "Digital", icon: Sparkles },
-      { to: "/shelf", label: "My Shelf", icon: BookOpen },
+      { to: "/loans", label: "My loans", icon: BookOpen },
     );
   } else if (staff) {
-    nav.push({ to: "/library", label: "Library", icon: Library });
+    nav.push(
+      { to: "/library", label: "Library", icon: Library },
+      { to: "/circulation", label: "Desk", icon: ArrowLeftRight },
+    );
   }
   if (staff) nav.push({ to: "/manage", label: "Manage", icon: Users });
   if (platformAdmin) nav.push({ to: "/platform", label: "Platform", icon: Building2 });
