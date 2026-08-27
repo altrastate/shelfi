@@ -9,6 +9,7 @@ import {
   Sparkles,
   Building2,
   Heart,
+  BarChart3,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { isActiveStaff, isParent, primaryRole, roleLabel, useSession } from "@/lib/session";
@@ -48,7 +49,10 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
   if (!parent) {
-    if (staff) nav.push({ to: "/manage", label: "Manage", icon: Users });
+    if (staff) {
+      nav.push({ to: "/reports", label: "Reports", icon: BarChart3 });
+      nav.push({ to: "/manage", label: "Manage", icon: Users });
+    }
     if (platformAdmin) nav.push({ to: "/platform", label: "Platform", icon: Building2 });
     nav.push({ to: "/account", label: "Account", icon: User });
   }
