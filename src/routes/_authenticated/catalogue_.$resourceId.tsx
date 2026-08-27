@@ -16,7 +16,15 @@ import {
   type DigitalResource,
   type DigitalStatus,
 } from "@/lib/digital";
+import {
+  addToShelf,
+  fetchProgress,
+  progressLabel,
+  readingKeys,
+  removeFromShelf,
+} from "@/lib/reading";
 import { EmptyState, ErrorState, LoadingList } from "@/components/shelfi/states";
+import { ProgressBar } from "@/components/shelfi/book-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,11 +145,7 @@ function DigitalBookPage() {
           This book isn't available to read at the moment.
         </div>
       ) : (
-        <Button asChild className="mt-4 w-full" size="lg" disabled={!resource.storage_path}>
-          <Link to="/read/$resourceId" params={{ resourceId: resource.id }}>
-            <BookOpen className="mr-2 size-4" /> Read
-          </Link>
-        </Button>
+        <ReadingActions resource={resource} />
       )}
 
       {resource.description ? (
@@ -404,5 +408,85 @@ function StaffControls({ resource }: { resource: DigitalResource }) {
         access.
       </p>
     </section>
+  );
+}
+
+function ReadingActions({ resource }: { resource: DigitalResource }) {
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+  const userId = session?.id;
+
+  const progress = useQuery({
+    queryKey: readingKeys.progress(userId, resource.id),
+    enabled: Boolean(userId),
+    queryFn: () => fetchProgress(resource.id),
+    staleTime: 30_000,
+  });
+
+  const shelfState = useQuery({
+    queryKey: readingKeys.shelfState(userId, resource.id),
+    enabled: Boolean(userId),
+    staleTime: 30_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shelf_items")
+        .select("id")
+        .eq("resource_id", resource.id)
+        .maybeSingle();
+      if (error) throw error;
+      return Boolean(data);
+    },
+  });
+
+  const onShelf = shelfState.data === true;
+
+  const toggleShelf = useMutation({
+    mutationFn: async () => {
+      if (!userId || !session?.schoolId) throw new Error("Join a school first.");
+      if (onShelf) {
+        await removeFromShelf(resource.id);
+        return false;
+      }
+      await addToShelf({ userId, schoolId: session.schoolId, resourceId: resource.id });
+      return true;
+    },
+    onSuccess: async (added) => {
+      toast.success(added ? "Saved to My Shelf." : "Removed from My Shelf.");
+      await queryClient.invalidateQueries({ queryKey: readingKeys.all });
+    },
+    onError: () => toast.error("We couldn't update your shelf."),
+  });
+
+  const percent = Math.round(progress.data?.percent_complete ?? 0);
+
+  return (
+    <div className="mt-4 space-y-3">
+      {progress.data && percent > 0 ? (
+        <div>
+          <ProgressBar percent={percent} />
+          <p className="mt-1 text-xs text-muted-foreground">
+            {progress.data.completed_at
+              ? "Completed"
+              : `${percent}% complete · page ${progress.data.current_page}`}
+          </p>
+        </div>
+      ) : null}
+
+      <Button asChild className="w-full" size="lg" disabled={!resource.storage_path}>
+        <Link to="/read/$resourceId" params={{ resourceId: resource.id }}>
+          <BookOpen className="mr-2 size-4" /> {progressLabel(progress.data)}
+        </Link>
+      </Button>
+
+      <Button
+        variant={onShelf ? "secondary" : "outline"}
+        className="w-full"
+        size="lg"
+        disabled={toggleShelf.isPending || shelfState.isLoading}
+        onClick={() => toggleShelf.mutate()}
+      >
+        {onShelf ? "On My Shelf — remove" : "Add to My Shelf"}
+      </Button>
+    </div>
   );
 }

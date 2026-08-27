@@ -1,8 +1,16 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Clock, Library, ShieldX, Sparkles, Users } from "lucide-react";
+import { BookOpen, Clock, Library, ShieldX, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isActiveStaff, primaryRole, roleLabel, useSession } from "@/lib/session";
+import {
+  RESOURCE_CARD_COLUMNS,
+  fetchProgressList,
+  readingKeys,
+  signCoverMap,
+  type ReadingResource,
+} from "@/lib/reading";
+import { BookCard } from "@/components/shelfi/book-card";
 import { EmptyState, LoadingList, PageHeader } from "@/components/shelfi/states";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -22,22 +30,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function Dashboard() {
   const { data: session, isLoading } = useSession();
 
-  const counts = useQuery({
-    queryKey: ["shelfi", "dashboard-counts", session?.schoolId],
-    enabled: Boolean(session?.schoolId) && session?.status === "active",
-    queryFn: async () => {
-      const [books, resources, shelf] = await Promise.all([
-        supabase.from("books").select("id", { count: "exact", head: true }),
-        supabase.from("digital_resources").select("id", { count: "exact", head: true }),
-        supabase.from("shelf_items").select("id", { count: "exact", head: true }),
-      ]);
-      return {
-        books: books.count ?? 0,
-        resources: resources.count ?? 0,
-        shelf: shelf.count ?? 0,
-      };
-    },
-  });
 
   if (isLoading) return <LoadingList rows={2} />;
 
@@ -137,35 +129,123 @@ function Dashboard() {
     );
   }
 
-  const tiles = [
-    { to: "/library", label: "Physical books", value: counts.data?.books ?? 0, icon: Library },
-    {
-      to: "/catalogue",
-      label: "Digital resources",
-      value: counts.data?.resources ?? 0,
-      icon: Sparkles,
-    },
-    { to: "/shelf", label: "On My Shelf", value: counts.data?.shelf ?? 0, icon: BookOpen },
-  ];
-
   return (
     <>
       <PageHeader
         title={`Hello${session.fullName ? `, ${session.fullName.split(" ")[0]}` : ""}`}
         description={`${roleLabel[primaryRole(session.roles)]} · ${session.school?.name ?? ""}`}
       />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {tiles.map((tile) => (
-          <Link key={tile.to} to={tile.to} className="shelfi-surface p-4 transition-shadow hover:shadow-lift">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-primary">
-              <tile.icon className="size-4" />
-            </span>
-            <p className="mt-3 text-2xl font-semibold text-foreground">{tile.value}</p>
-            <p className="text-sm text-muted-foreground">{tile.label}</p>
-          </Link>
-        ))}
-      </div>
+      <StudentHome />
     </>
+  );
+}
+
+function StudentHome() {
+  const { data: session } = useSession();
+  const userId = session?.id;
+
+  const progress = useQuery({
+    queryKey: readingKeys.progressList(userId),
+    enabled: Boolean(userId),
+    queryFn: fetchProgressList,
+    staleTime: 60_000,
+  });
+
+  const recentlyAdded = useQuery({
+    queryKey: ["shelfi", "reading", "recently-added", session?.schoolId],
+    enabled: Boolean(session?.schoolId),
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("digital_resources")
+        .select(RESOURCE_CARD_COLUMNS)
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(8);
+      if (error) throw error;
+      return (data ?? []) as unknown as ReadingResource[];
+    },
+  });
+
+  const rows = progress.data ?? [];
+  const covers = useQuery({
+    queryKey: ["shelfi", "reading", "home-covers", userId, rows.length, recentlyAdded.data?.length],
+    enabled: progress.isSuccess && recentlyAdded.isSuccess,
+    staleTime: 30 * 60_000,
+    queryFn: () =>
+      signCoverMap([
+        ...rows.map((p) => p.resource.cover_path),
+        ...(recentlyAdded.data ?? []).map((r) => r.cover_path),
+      ]),
+  });
+
+  if (progress.isLoading || recentlyAdded.isLoading) return <LoadingList rows={2} />;
+
+  const cover = (r: ReadingResource) =>
+    r.cover_path ? (covers.data?.get(r.cover_path) ?? null) : null;
+  const continuing = rows.filter((p) => !p.completed_at && p.percent_complete > 0).slice(0, 6);
+  const recent = rows.slice(0, 6);
+  const added = recentlyAdded.data ?? [];
+
+  return (
+    <div className="space-y-8">
+      {continuing.length > 0 ? (
+        <HomeSection title="Continue reading">
+          {continuing.map((p) => (
+            <BookCard
+              key={p.resource_id}
+              resource={p.resource}
+              coverUrl={cover(p.resource)}
+              percent={Math.round(p.percent_complete)}
+            />
+          ))}
+        </HomeSection>
+      ) : (
+        <EmptyState
+          icon={<BookOpen className="size-5" />}
+          title="Start your reading journey"
+          description="Open a digital book from the library and Shelfi will remember exactly where you stopped."
+          action={
+            <Link
+              to="/catalogue"
+              className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
+            >
+              Explore library
+            </Link>
+          }
+        />
+      )}
+
+      {recent.length > 0 ? (
+        <HomeSection title="Recently read">
+          {recent.map((p) => (
+            <BookCard
+              key={`r-${p.resource_id}`}
+              resource={p.resource}
+              coverUrl={cover(p.resource)}
+              percent={Math.round(p.percent_complete)}
+            />
+          ))}
+        </HomeSection>
+      ) : null}
+
+      {added.length > 0 ? (
+        <HomeSection title="Recently added">
+          {added.map((r) => (
+            <BookCard key={`a-${r.id}`} resource={r} coverUrl={cover(r)} />
+          ))}
+        </HomeSection>
+      ) : null}
+    </div>
+  );
+}
+
+function HomeSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="font-display text-lg font-semibold text-foreground">{title}</h2>
+      <div className="mt-3 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">{children}</div>
+    </section>
   );
 }
 

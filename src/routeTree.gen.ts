@@ -19,8 +19,8 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedLoansRouteImport } from './routes/_authenticated/loans'
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
+import { Route as AuthenticatedMyShelfRouteImport } from './routes/_authenticated/my-shelf'
 import { Route as AuthenticatedPlatformRouteImport } from './routes/_authenticated/platform'
-import { Route as AuthenticatedShelfRouteImport } from './routes/_authenticated/shelf'
 import { Route as AuthenticatedBooksBookIdRouteImport } from './routes/_authenticated/books.$bookId'
 import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue_.$resourceId'
 import { Route as AuthenticatedReadResourceIdRouteImport } from './routes/_authenticated/read.$resourceId'
@@ -75,14 +75,14 @@ const AuthenticatedManageRoute = AuthenticatedManageRouteImport.update({
   path: '/manage',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMyShelfRoute = AuthenticatedMyShelfRouteImport.update({
+  id: '/my-shelf',
+  path: '/my-shelf',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlatformRoute = AuthenticatedPlatformRouteImport.update({
   id: '/platform',
   path: '/platform',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedShelfRoute = AuthenticatedShelfRouteImport.update({
-  id: '/shelf',
-  path: '/shelf',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBooksBookIdRoute =
@@ -114,8 +114,8 @@ export interface FileRoutesByFullPath {
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
+  '/my-shelf': typeof AuthenticatedMyShelfRoute
   '/platform': typeof AuthenticatedPlatformRoute
-  '/shelf': typeof AuthenticatedShelfRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
@@ -130,8 +130,8 @@ export interface FileRoutesByTo {
   '/library': typeof AuthenticatedLibraryRoute
   '/loans': typeof AuthenticatedLoansRoute
   '/manage': typeof AuthenticatedManageRoute
+  '/my-shelf': typeof AuthenticatedMyShelfRoute
   '/platform': typeof AuthenticatedPlatformRoute
-  '/shelf': typeof AuthenticatedShelfRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
@@ -148,8 +148,8 @@ export interface FileRoutesById {
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/loans': typeof AuthenticatedLoansRoute
   '/_authenticated/manage': typeof AuthenticatedManageRoute
+  '/_authenticated/my-shelf': typeof AuthenticatedMyShelfRoute
   '/_authenticated/platform': typeof AuthenticatedPlatformRoute
-  '/_authenticated/shelf': typeof AuthenticatedShelfRoute
   '/_authenticated/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/_authenticated/catalogue_/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
   '/_authenticated/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
@@ -166,8 +166,8 @@ export interface FileRouteTypes {
     | '/library'
     | '/loans'
     | '/manage'
+    | '/my-shelf'
     | '/platform'
-    | '/shelf'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
     | '/read/$resourceId'
@@ -182,8 +182,8 @@ export interface FileRouteTypes {
     | '/library'
     | '/loans'
     | '/manage'
+    | '/my-shelf'
     | '/platform'
-    | '/shelf'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
     | '/read/$resourceId'
@@ -199,8 +199,8 @@ export interface FileRouteTypes {
     | '/_authenticated/library'
     | '/_authenticated/loans'
     | '/_authenticated/manage'
+    | '/_authenticated/my-shelf'
     | '/_authenticated/platform'
-    | '/_authenticated/shelf'
     | '/_authenticated/books/$bookId'
     | '/_authenticated/catalogue_/$resourceId'
     | '/_authenticated/read/$resourceId'
@@ -284,18 +284,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/my-shelf': {
+      id: '/_authenticated/my-shelf'
+      path: '/my-shelf'
+      fullPath: '/my-shelf'
+      preLoaderRoute: typeof AuthenticatedMyShelfRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/platform': {
       id: '/_authenticated/platform'
       path: '/platform'
       fullPath: '/platform'
       preLoaderRoute: typeof AuthenticatedPlatformRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/shelf': {
-      id: '/_authenticated/shelf'
-      path: '/shelf'
-      fullPath: '/shelf'
-      preLoaderRoute: typeof AuthenticatedShelfRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/books/$bookId': {
@@ -330,8 +330,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedLoansRoute: typeof AuthenticatedLoansRoute
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
+  AuthenticatedMyShelfRoute: typeof AuthenticatedMyShelfRoute
   AuthenticatedPlatformRoute: typeof AuthenticatedPlatformRoute
-  AuthenticatedShelfRoute: typeof AuthenticatedShelfRoute
   AuthenticatedBooksBookIdRoute: typeof AuthenticatedBooksBookIdRoute
   AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
   AuthenticatedReadResourceIdRoute: typeof AuthenticatedReadResourceIdRoute
@@ -345,8 +345,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedLoansRoute: AuthenticatedLoansRoute,
   AuthenticatedManageRoute: AuthenticatedManageRoute,
+  AuthenticatedMyShelfRoute: AuthenticatedMyShelfRoute,
   AuthenticatedPlatformRoute: AuthenticatedPlatformRoute,
-  AuthenticatedShelfRoute: AuthenticatedShelfRoute,
   AuthenticatedBooksBookIdRoute: AuthenticatedBooksBookIdRoute,
   AuthenticatedCatalogueResourceIdRoute: AuthenticatedCatalogueResourceIdRoute,
   AuthenticatedReadResourceIdRoute: AuthenticatedReadResourceIdRoute,
