@@ -744,6 +744,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_school_admin: {
+        Args: { _school_id: string; _user_id: string }
+        Returns: undefined
+      }
       current_school_id: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -753,8 +757,25 @@ export type Database = {
         Returns: boolean
       }
       is_active_member: { Args: { _school_id: string }; Returns: boolean }
+      is_librarian: { Args: { _school_id: string }; Returns: boolean }
       is_school_admin: { Args: { _school_id: string }; Returns: boolean }
+      is_school_staff: { Args: { _school_id: string }; Returns: boolean }
       is_system_admin: { Args: never; Returns: boolean }
+      request_school_join: {
+        Args: {
+          _full_name?: string
+          _join_code: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: {
+          school_id: string
+          school_name: string
+        }[]
+      }
+      review_join_request: {
+        Args: { _approve: boolean; _note?: string; _request_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "system_admin" | "school_admin" | "student" | "librarian"
