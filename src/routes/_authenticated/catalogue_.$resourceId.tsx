@@ -444,7 +444,7 @@ function ReadingActions({ resource }: { resource: DigitalResource }) {
     mutationFn: async () => {
       if (!userId || !session?.schoolId) throw new Error("Join a school first.");
       if (onShelf) {
-        await removeFromShelf(resource.id);
+        await removeFromShelf(resource.id, session.id);
         return false;
       }
       await addToShelf({ userId, schoolId: session.schoolId, resourceId: resource.id });

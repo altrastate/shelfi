@@ -144,17 +144,25 @@ export async function addToShelf(input: {
   if (error && !/duplicate key/i.test(error.message)) throw error;
 }
 
-export async function removeFromShelf(resourceId: string) {
-  const { error } = await supabase.from("shelf_items").delete().eq("resource_id", resourceId);
+/**
+ * Row-level security already scopes shelves to the signed-in student; the
+ * explicit owner filter is defence in depth so a shared client can never
+ * widen the delete.
+ */
+export async function removeFromShelf(resourceId: string, userId?: string) {
+  let query = supabase.from("shelf_items").delete().eq("resource_id", resourceId);
+  if (userId) query = query.eq("user_id", userId);
+  const { error } = await query;
   if (error) throw error;
 }
 
-export async function fetchBookmarks(resourceId: string): Promise<BookmarkRow[]> {
-  const { data, error } = await supabase
+export async function fetchBookmarks(resourceId: string, userId?: string): Promise<BookmarkRow[]> {
+  let query = supabase
     .from("bookmarks")
     .select("id, resource_id, page, note, created_at")
-    .eq("resource_id", resourceId)
-    .order("page", { ascending: true });
+    .eq("resource_id", resourceId);
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query.order("page", { ascending: true });
   if (error) throw error;
   return (data ?? []) as BookmarkRow[];
 }

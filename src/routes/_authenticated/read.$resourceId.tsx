@@ -75,7 +75,7 @@ function ReaderPage() {
   const bookmarks = useQuery({
     queryKey: readingKeys.bookmarks(session?.id, resourceId),
     enabled: Boolean(session?.id),
-    queryFn: () => fetchBookmarks(resourceId),
+    queryFn: () => fetchBookmarks(resourceId, session?.id),
     staleTime: 60_000,
   });
 
@@ -249,7 +249,7 @@ function ReaderPage() {
     if (!session?.id || !session.schoolId) return;
     try {
       if (currentBookmark) {
-        const { error } = await supabase.from("bookmarks").delete().eq("id", currentBookmark.id);
+        const { error } = await supabase.from("bookmarks").delete().eq("id", currentBookmark.id).eq("user_id", session.id);
         if (error) throw error;
         toast.success("Bookmark removed.");
       } else {
@@ -259,7 +259,9 @@ function ReaderPage() {
           resource_id: resourceId,
           page,
         });
-        if (error) throw error;
+        // A rapid double-tap hits the one-bookmark-per-page rule; that is a
+        // no-op for the student, not an error.
+        if (error && !/duplicate key/i.test(error.message)) throw error;
         toast.success(`Page ${page} bookmarked.`);
       }
       await queryClient.invalidateQueries({
