@@ -8,9 +8,10 @@ import {
   Users,
   Sparkles,
   Building2,
+  Heart,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { isActiveStaff, primaryRole, roleLabel, useSession } from "@/lib/session";
+import { isActiveStaff, isParent, primaryRole, roleLabel, useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string; icon: typeof BookOpen };
@@ -23,6 +24,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const staff = isActiveStaff(session);
   const platformAdmin = roles.includes("system_admin");
   const activeMember = session?.status === "active" && Boolean(session?.schoolId);
+
+  const parent = isParent(session);
+
+  if (parent) {
+    const parentNav: NavItem[] = [
+      { to: "/family", label: "Home", icon: Heart },
+      { to: "/account", label: "Account", icon: User },
+    ];
+    return <Shell nav={parentNav} session={session} role={role} pathname={pathname}>{children}</Shell>;
+  }
 
   const nav: NavItem[] = [{ to: "/dashboard", label: "Home", icon: LayoutDashboard }];
   if (activeMember && !staff) {
