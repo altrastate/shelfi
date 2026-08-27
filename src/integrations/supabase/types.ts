@@ -829,6 +829,7 @@ export type Database = {
         Args: { _approve: boolean; _note?: string; _request_id: string }
         Returns: undefined
       }
+      safe_uuid: { Args: { _value: string }; Returns: string }
       set_copy_status: {
         Args: {
           _copy_id: string
