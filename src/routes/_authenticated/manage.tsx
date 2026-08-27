@@ -30,6 +30,7 @@ const statusTone: Record<string, string> = {
   active: "bg-secondary text-primary",
   pending: "bg-muted text-muted-foreground",
   rejected: "bg-destructive/10 text-destructive",
+  revoked: "bg-destructive/10 text-destructive",
   suspended: "bg-destructive/10 text-destructive",
 };
 
