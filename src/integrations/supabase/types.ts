@@ -410,6 +410,7 @@ export type Database = {
           id: string
           school_id: string | null
           status: Database["public"]["Enums"]["membership_status"]
+          student_identifier: string | null
           updated_at: string
           year_group: string | null
         }
@@ -420,6 +421,7 @@ export type Database = {
           id: string
           school_id?: string | null
           status?: Database["public"]["Enums"]["membership_status"]
+          student_identifier?: string | null
           updated_at?: string
           year_group?: string | null
         }
@@ -430,6 +432,7 @@ export type Database = {
           id?: string
           school_id?: string | null
           status?: Database["public"]["Enums"]["membership_status"]
+          student_identifier?: string | null
           updated_at?: string
           year_group?: string | null
         }
@@ -574,8 +577,10 @@ export type Database = {
       }
       school_join_requests: {
         Row: {
+          decision_note: string | null
           id: string
           requested_at: string
+          requested_role: Database["public"]["Enums"]["app_role"]
           reviewed_at: string | null
           reviewed_by: string | null
           school_id: string
@@ -583,8 +588,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          decision_note?: string | null
           id?: string
           requested_at?: string
+          requested_role?: Database["public"]["Enums"]["app_role"]
           reviewed_at?: string | null
           reviewed_by?: string | null
           school_id: string
@@ -592,8 +599,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          decision_note?: string | null
           id?: string
           requested_at?: string
+          requested_role?: Database["public"]["Enums"]["app_role"]
           reviewed_at?: string | null
           reviewed_by?: string | null
           school_id?: string
@@ -748,7 +757,7 @@ export type Database = {
       is_system_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      app_role: "system_admin" | "school_admin" | "student"
+      app_role: "system_admin" | "school_admin" | "student" | "librarian"
       borrow_status: "borrowed" | "returned" | "overdue" | "lost"
       copy_status:
         | "available"
@@ -757,7 +766,7 @@ export type Database = {
         | "damaged"
         | "lost"
         | "retired"
-      membership_status: "pending" | "active" | "suspended"
+      membership_status: "pending" | "active" | "suspended" | "rejected"
       resource_source: "school" | "shelfi_catalogue"
     }
     CompositeTypes: {
@@ -886,7 +895,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["system_admin", "school_admin", "student"],
+      app_role: ["system_admin", "school_admin", "student", "librarian"],
       borrow_status: ["borrowed", "returned", "overdue", "lost"],
       copy_status: [
         "available",
@@ -896,7 +905,7 @@ export const Constants = {
         "lost",
         "retired",
       ],
-      membership_status: ["pending", "active", "suspended"],
+      membership_status: ["pending", "active", "suspended", "rejected"],
       resource_source: ["school", "shelfi_catalogue"],
     },
   },
