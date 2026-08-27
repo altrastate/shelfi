@@ -56,7 +56,7 @@ export const Route = createFileRoute("/_authenticated/catalogue")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: DigitalLibraryPage;
+  component: DigitalLibraryPage,
 });
 
 const SELECT_COLUMNS =
