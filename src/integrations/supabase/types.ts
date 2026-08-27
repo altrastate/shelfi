@@ -500,6 +500,56 @@ export type Database = {
           },
         ]
       }
+      parent_student_relationships: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          decision_note: string | null
+          id: string
+          parent_user_id: string
+          relationship_type: string
+          school_id: string
+          status: Database["public"]["Enums"]["parent_link_status"]
+          student_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          decision_note?: string | null
+          id?: string
+          parent_user_id: string
+          relationship_type?: string
+          school_id: string
+          status?: Database["public"]["Enums"]["parent_link_status"]
+          student_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          decision_note?: string | null
+          id?: string
+          parent_user_id?: string
+          relationship_type?: string
+          school_id?: string
+          status?: Database["public"]["Enums"]["parent_link_status"]
+          student_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_student_relationships_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       physical_copies: {
         Row: {
           acquired_on: string | null
@@ -562,6 +612,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           full_name: string
+          guardian_code: string | null
           id: string
           school_id: string | null
           status: Database["public"]["Enums"]["membership_status"]
@@ -573,6 +624,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           full_name?: string
+          guardian_code?: string | null
           id: string
           school_id?: string | null
           status?: Database["public"]["Enums"]["membership_status"]
@@ -584,6 +636,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           full_name?: string
+          guardian_code?: string | null
           id?: string
           school_id?: string | null
           status?: Database["public"]["Enums"]["membership_status"]
@@ -908,6 +961,7 @@ export type Database = {
         Returns: boolean
       }
       current_school_id: { Args: never; Returns: string }
+      ensure_guardian_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -915,8 +969,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_guardian_of: { Args: { _student_id: string }; Returns: boolean }
       is_active_member: { Args: { _school_id: string }; Returns: boolean }
       is_librarian: { Args: { _school_id: string }; Returns: boolean }
+      is_my_guardian: { Args: { _parent_id: string }; Returns: boolean }
       is_school_admin: { Args: { _school_id: string }; Returns: boolean }
       is_school_staff: { Args: { _school_id: string }; Returns: boolean }
       is_system_admin: { Args: never; Returns: boolean }
@@ -928,6 +984,19 @@ export type Database = {
           _notes?: string
         }
         Returns: string
+      }
+      request_parent_link: {
+        Args: {
+          _full_name?: string
+          _guardian_code: string
+          _join_code: string
+          _relationship_type?: string
+        }
+        Returns: {
+          school_name: string
+          status: string
+          student_first_name: string
+        }[]
       }
       request_school_join: {
         Args: {
@@ -946,6 +1015,14 @@ export type Database = {
       }
       review_join_request: {
         Args: { _approve: boolean; _note?: string; _request_id: string }
+        Returns: undefined
+      }
+      review_parent_link: {
+        Args: { _approve: boolean; _note?: string; _relationship_id: string }
+        Returns: undefined
+      }
+      revoke_parent_link: {
+        Args: { _note?: string; _relationship_id: string }
         Returns: undefined
       }
       safe_uuid: { Args: { _value: string }; Returns: string }
@@ -975,6 +1052,7 @@ export type Database = {
         | "retired"
         | "archived"
       membership_status: "pending" | "active" | "suspended" | "rejected"
+      parent_link_status: "pending" | "active" | "rejected" | "revoked"
       resource_source: "school" | "shelfi_catalogue"
     }
     CompositeTypes: {
@@ -1121,6 +1199,7 @@ export const Constants = {
         "archived",
       ],
       membership_status: ["pending", "active", "suspended", "rejected"],
+      parent_link_status: ["pending", "active", "rejected", "revoked"],
       resource_source: ["school", "shelfi_catalogue"],
     },
   },
