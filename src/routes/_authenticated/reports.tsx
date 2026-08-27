@@ -107,7 +107,11 @@ function ReportsPage() {
       {reports.isLoading ? (
         <LoadingList rows={4} />
       ) : reports.isError || !reports.data ? (
-        <ErrorState message={(reports.error as Error | undefined)?.message} />
+        <ErrorState
+          {...((reports.error as Error | undefined)?.message
+            ? { message: (reports.error as Error).message }
+            : {})}
+        />
       ) : (
         <ReportsBody data={reports.data} period={period} />
       )}
