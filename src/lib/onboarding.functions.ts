@@ -12,7 +12,7 @@ export const requestSchoolAccess = createServerFn({ method: "POST" })
   .inputValidator((data: { joinCode: string; role: "student" | "librarian"; fullName?: string }) => {
     const joinCode = String(data?.joinCode ?? "").trim().toUpperCase();
     if (joinCode.length < 4) throw new Error("Enter a valid join code.");
-    const role = data?.role === "librarian" ? "librarian" : "student";
+    const role: "student" | "librarian" = data?.role === "librarian" ? "librarian" : "student";
     return { joinCode, role, fullName: String(data?.fullName ?? "").trim() };
   })
   .handler(async ({ data, context }) => {
