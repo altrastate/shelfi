@@ -279,19 +279,26 @@ export type Database = {
         Row: {
           author_name: string | null
           category_id: string | null
+          cover_path: string | null
           cover_url: string | null
           created_at: string
           description: string | null
+          file_size: number | null
           file_url: string | null
           format: string | null
           id: string
           is_active: boolean
+          isbn: string | null
           language: string | null
+          level: string | null
           page_count: number | null
           published_year: number | null
           publisher_id: string | null
           school_id: string | null
           source_type: Database["public"]["Enums"]["resource_source"]
+          status: string
+          storage_path: string | null
+          subject: string | null
           subtitle: string | null
           title: string
           updated_at: string
@@ -299,19 +306,26 @@ export type Database = {
         Insert: {
           author_name?: string | null
           category_id?: string | null
+          cover_path?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          file_size?: number | null
           file_url?: string | null
           format?: string | null
           id?: string
           is_active?: boolean
+          isbn?: string | null
           language?: string | null
+          level?: string | null
           page_count?: number | null
           published_year?: number | null
           publisher_id?: string | null
           school_id?: string | null
           source_type: Database["public"]["Enums"]["resource_source"]
+          status?: string
+          storage_path?: string | null
+          subject?: string | null
           subtitle?: string | null
           title: string
           updated_at?: string
@@ -319,19 +333,26 @@ export type Database = {
         Update: {
           author_name?: string | null
           category_id?: string | null
+          cover_path?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
+          file_size?: number | null
           file_url?: string | null
           format?: string | null
           id?: string
           is_active?: boolean
+          isbn?: string | null
           language?: string | null
+          level?: string | null
           page_count?: number | null
           published_year?: number | null
           publisher_id?: string | null
           school_id?: string | null
           source_type?: Database["public"]["Enums"]["resource_source"]
+          status?: string
+          storage_path?: string | null
+          subject?: string | null
           subtitle?: string | null
           title?: string
           updated_at?: string
@@ -763,6 +784,10 @@ export type Database = {
         Args: { _school_id: string; _user_id: string }
         Returns: undefined
       }
+      can_open_digital_resource: {
+        Args: { _resource_id: string }
+        Returns: boolean
+      }
       current_school_id: { Args: never; Returns: string }
       has_role: {
         Args: {
@@ -804,6 +829,7 @@ export type Database = {
         Args: { _approve: boolean; _note?: string; _request_id: string }
         Returns: undefined
       }
+      safe_uuid: { Args: { _value: string }; Returns: string }
       set_copy_status: {
         Args: {
           _copy_id: string
