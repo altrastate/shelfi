@@ -27,9 +27,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const nav: NavItem[] = [{ to: "/dashboard", label: "Home", icon: LayoutDashboard }];
   if (activeMember && !staff) {
     nav.push(
-      { to: "/library", label: "Library", icon: Library },
-      { to: "/catalogue", label: "Digital", icon: Sparkles },
-      { to: "/loans", label: "My loans", icon: BookOpen },
+      { to: "/catalogue", label: "Library", icon: Library },
+      { to: "/my-shelf", label: "My Shelf", icon: BookOpen },
+      { to: "/loans", label: "Loans", icon: Sparkles },
     );
   } else if (staff) {
     nav.push(
