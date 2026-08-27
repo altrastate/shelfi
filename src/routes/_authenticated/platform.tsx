@@ -185,20 +185,24 @@ function PlatformPage() {
       ) : (
         <ul className="space-y-3">
           {schools.data!.map((s) => (
-            <li key={s.id} className="shelfi-surface flex items-center gap-3 p-4">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {s.slug} · {s.is_active ? "active" : "inactive"}
-                </p>
+            <li key={s.id} className="shelfi-surface space-y-3 p-4">
+              <div className="flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{s.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {s.slug} · {s.is_active ? "active" : "inactive"}
+                  </p>
+                </div>
+                {s.join_code ? (
+                  <span className="font-mono text-xs tracking-widest text-primary">
+                    {s.join_code}
+                  </span>
+                ) : null}
               </div>
-              {s.join_code ? (
-                <span className="font-mono text-xs tracking-widest text-primary">
-                  {s.join_code}
-                </span>
-              ) : null}
+              <AssignAdmin schoolId={s.id} schoolName={s.name} />
             </li>
           ))}
+
         </ul>
       )}
     </>
