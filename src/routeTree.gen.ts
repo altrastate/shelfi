@@ -24,6 +24,7 @@ import { Route as AuthenticatedMyShelfRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPlatformRouteImport } from './routes/_authenticated/platform'
 import { Route as AuthenticatedBooksBookIdRouteImport } from './routes/_authenticated/books.$bookId'
 import { Route as AuthenticatedCatalogueResourceIdRouteImport } from './routes/_authenticated/catalogue_.$resourceId'
+import { Route as AuthenticatedFamilyStudentIdRouteImport } from './routes/_authenticated/family_.$studentId'
 import { Route as AuthenticatedReadResourceIdRouteImport } from './routes/_authenticated/read.$resourceId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -103,6 +104,12 @@ const AuthenticatedCatalogueResourceIdRoute =
     path: '/catalogue/$resourceId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFamilyStudentIdRoute =
+  AuthenticatedFamilyStudentIdRouteImport.update({
+    id: '/family_/$studentId',
+    path: '/family/$studentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedReadResourceIdRoute =
   AuthenticatedReadResourceIdRouteImport.update({
     id: '/read/$resourceId',
@@ -125,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/platform': typeof AuthenticatedPlatformRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRoutesByTo {
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/platform': typeof AuthenticatedPlatformRoute
   '/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/catalogue/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/family/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRoutesById {
@@ -161,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/platform': typeof AuthenticatedPlatformRoute
   '/_authenticated/books/$bookId': typeof AuthenticatedBooksBookIdRoute
   '/_authenticated/catalogue_/$resourceId': typeof AuthenticatedCatalogueResourceIdRoute
+  '/_authenticated/family_/$studentId': typeof AuthenticatedFamilyStudentIdRoute
   '/_authenticated/read/$resourceId': typeof AuthenticatedReadResourceIdRoute
 }
 export interface FileRouteTypes {
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
+    | '/family/$studentId'
     | '/read/$resourceId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/platform'
     | '/books/$bookId'
     | '/catalogue/$resourceId'
+    | '/family/$studentId'
     | '/read/$resourceId'
   id:
     | '__root__'
@@ -215,6 +227,7 @@ export interface FileRouteTypes {
     | '/_authenticated/platform'
     | '/_authenticated/books/$bookId'
     | '/_authenticated/catalogue_/$resourceId'
+    | '/_authenticated/family_/$studentId'
     | '/_authenticated/read/$resourceId'
   fileRoutesById: FileRoutesById
 }
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCatalogueResourceIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/family_/$studentId': {
+      id: '/_authenticated/family_/$studentId'
+      path: '/family/$studentId'
+      fullPath: '/family/$studentId'
+      preLoaderRoute: typeof AuthenticatedFamilyStudentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/read/$resourceId': {
       id: '/_authenticated/read/$resourceId'
       path: '/read/$resourceId'
@@ -354,6 +374,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlatformRoute: typeof AuthenticatedPlatformRoute
   AuthenticatedBooksBookIdRoute: typeof AuthenticatedBooksBookIdRoute
   AuthenticatedCatalogueResourceIdRoute: typeof AuthenticatedCatalogueResourceIdRoute
+  AuthenticatedFamilyStudentIdRoute: typeof AuthenticatedFamilyStudentIdRoute
   AuthenticatedReadResourceIdRoute: typeof AuthenticatedReadResourceIdRoute
 }
 
@@ -370,6 +391,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlatformRoute: AuthenticatedPlatformRoute,
   AuthenticatedBooksBookIdRoute: AuthenticatedBooksBookIdRoute,
   AuthenticatedCatalogueResourceIdRoute: AuthenticatedCatalogueResourceIdRoute,
+  AuthenticatedFamilyStudentIdRoute: AuthenticatedFamilyStudentIdRoute,
   AuthenticatedReadResourceIdRoute: AuthenticatedReadResourceIdRoute,
 }
 
