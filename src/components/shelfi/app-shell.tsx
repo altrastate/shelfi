@@ -27,16 +27,14 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const parent = isParent(session);
 
+  // Guardians get a deliberately minimal, read-only surface: no library
+  // management, no circulation desk, no staff or platform tools.
+  const nav: NavItem[] = parent
+    ? [{ to: "/family", label: "Home", icon: Heart }]
+    : [{ to: "/dashboard", label: "Home", icon: LayoutDashboard }];
   if (parent) {
-    const parentNav: NavItem[] = [
-      { to: "/family", label: "Home", icon: Heart },
-      { to: "/account", label: "Account", icon: User },
-    ];
-    return <Shell nav={parentNav} session={session} role={role} pathname={pathname}>{children}</Shell>;
-  }
-
-  const nav: NavItem[] = [{ to: "/dashboard", label: "Home", icon: LayoutDashboard }];
-  if (activeMember && !staff) {
+    nav.push({ to: "/account", label: "Account", icon: User });
+  } else if (activeMember && !staff) {
     nav.push(
       { to: "/catalogue", label: "Library", icon: Library },
       { to: "/my-shelf", label: "My Shelf", icon: BookOpen },
@@ -49,15 +47,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       { to: "/circulation", label: "Desk", icon: ArrowLeftRight },
     );
   }
-  if (staff) nav.push({ to: "/manage", label: "Manage", icon: Users });
-  if (platformAdmin) nav.push({ to: "/platform", label: "Platform", icon: Building2 });
-  nav.push({ to: "/account", label: "Account", icon: User });
+  if (!parent) {
+    if (staff) nav.push({ to: "/manage", label: "Manage", icon: Users });
+    if (platformAdmin) nav.push({ to: "/platform", label: "Platform", icon: Building2 });
+    nav.push({ to: "/account", label: "Account", icon: User });
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3">
-          <Link to="/dashboard" className="flex items-center gap-2">
+          <Link to={parent ? "/family" : "/dashboard"} className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Library className="size-4" />
             </span>
