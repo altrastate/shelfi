@@ -136,9 +136,9 @@ function Dashboard() {
 
   return (
     <>
-      <PageHeader
-        title={`Hello${session.fullName ? `, ${session.fullName.split(" ")[0]}` : ""}`}
-        description={`${roleLabel[primaryRole(session.roles)]} · ${session.school?.name ?? ""}`}
+      <CompanionGreeting
+        name={session.fullName ? (session.fullName.split(" ")[0] ?? "") : ""}
+        subtitle={`${roleLabel[primaryRole(session.roles)]} · ${session.school?.name ?? ""}`}
       />
       <StudentHome />
     </>
