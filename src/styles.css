@@ -165,6 +165,11 @@
 
   body {
     background-color: var(--color-background);
+    background-image:
+      radial-gradient(60rem 40rem at 8% -10%, #eae3d2 0%, transparent 60%),
+      radial-gradient(48rem 36rem at 105% 12%, #e2dac7 0%, transparent 62%),
+      radial-gradient(50rem 40rem at 40% 110%, rgb(30 142 137 / 0.07) 0%, transparent 65%);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
