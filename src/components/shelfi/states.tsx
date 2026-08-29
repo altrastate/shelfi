@@ -35,9 +35,18 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="shelfi-surface flex flex-col items-center px-6 py-12 text-center">
+    <div className="shelfi-surface relative flex flex-col items-center overflow-hidden px-6 py-14 text-center">
+      {/* Warm ambient illustration wash so empty screens are never flat white. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          backgroundImage:
+            "radial-gradient(22rem 14rem at 20% 0%, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 70%), radial-gradient(20rem 14rem at 90% 100%, color-mix(in oklab, var(--color-teal) 14%, transparent), transparent 70%)",
+        }}
+      />
       {icon ? (
-        <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-secondary text-primary">
+        <div className="relative mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-soft">
           {icon}
         </div>
       ) : null}
