@@ -185,7 +185,7 @@ function StudentHome() {
       ]),
   });
 
-  if (progress.isLoading || recentlyAdded.isLoading) return <LoadingList rows={2} />;
+  if (progress.isLoading || recentlyAdded.isLoading) return <BookGridSkeleton count={6} />;
 
   const cover = (r: ReadingResource) =>
     r.cover_path ? (covers.data?.get(r.cover_path) ?? null) : null;
