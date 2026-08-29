@@ -11,8 +11,11 @@
  */
 
 @theme inline {
-  --font-display: "DM Sans", "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Playfair Display", ui-serif, Georgia, serif;
+  --font-reader: "Inter", ui-sans-serif, system-ui, sans-serif;
+
 
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -61,28 +64,33 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-soft: 0 4px 20px -2px rgb(22 58 50 / 0.05);
-  --shadow-lift: 0 6px 26px -4px rgb(22 58 50 / 0.1);
+  --color-teal: var(--teal);
+  --color-teal-foreground: var(--teal-foreground);
+
+  --shadow-soft: 0 8px 30px -4px rgb(15 56 44 / 0.08), 0 2px 6px -1px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 18px 44px -12px rgb(15 56 44 / 0.18), 0 4px 10px -2px rgb(0 0 0 / 0.06);
 }
 
 :root {
   --radius: 0.875rem;
 
-  --background: #faf8f3;
-  --foreground: #202522;
+  --background: #f7f4ec;
+  --foreground: #161b18;
   --card: #ffffff;
-  --card-foreground: #202522;
+  --card-foreground: #161b18;
   --popover: #ffffff;
-  --popover-foreground: #202522;
+  --popover-foreground: #161b18;
 
-  --primary: #163a32;
-  --primary-foreground: #faf8f3;
-  --secondary: #f1eee6;
-  --secondary-foreground: #2c332f;
-  --muted: #f4f1ea;
-  --muted-foreground: #5c6560;
-  --accent: #d99a2b;
-  --accent-foreground: #202522;
+  --primary: #0f382c;
+  --primary-foreground: #f7f4ec;
+  --secondary: #eae3d2;
+  --secondary-foreground: #23302a;
+  --muted: #f1ece0;
+  --muted-foreground: #525b56;
+  --accent: #e59819;
+  --accent-foreground: #161b18;
+  --teal: #1e8e89;
+  --teal-foreground: #f7f4ec;
 
   --destructive: oklch(0.512 0.184 27);
   --destructive-foreground: #faf8f3;
@@ -91,13 +99,13 @@
   --warning: #b57a17;
   --warning-foreground: #faf8f3;
 
-  --border: #e5e2d9;
-  --input: #e5e2d9;
-  --ring: #163a32;
+  --border: rgb(22 58 44 / 0.1);
+  --input: rgb(22 58 44 / 0.14);
+  --ring: #0f382c;
 
-  --chart-1: #163a32;
-  --chart-2: #d99a2b;
-  --chart-3: #3f6f7d;
+  --chart-1: #0f382c;
+  --chart-2: #e59819;
+  --chart-3: #1e8e89;
   --chart-4: #9a5b34;
   --chart-5: #6b746f;
 
@@ -157,6 +165,11 @@
 
   body {
     background-color: var(--color-background);
+    background-image:
+      radial-gradient(60rem 40rem at 8% -10%, #eae3d2 0%, transparent 60%),
+      radial-gradient(48rem 36rem at 105% 12%, #e2dac7 0%, transparent 62%),
+      radial-gradient(50rem 40rem at 40% 110%, rgb(30 142 137 / 0.07) 0%, transparent 65%);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -172,10 +185,103 @@
 }
 
 @utility shelfi-surface {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(250 247 240 / 0.92));
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
+}
+
+/* Frosted container for overlays, drawers and sticky bars. */
+@utility shelfi-glass {
+  background: rgb(255 255 255 / 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--color-border);
+}
+
+/* Editorial serif for curated / featured collection headings only. */
+@utility shelfi-editorial {
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Tactile book cover: printed spine light, edge shadow, gentle hover tilt. */
+@utility shelfi-book {
+  position: relative;
+  border-radius: 0.35rem 0.75rem 0.75rem 0.35rem;
+  box-shadow:
+    0 10px 26px -8px rgb(15 56 44 / 0.28),
+    0 2px 6px -1px rgb(0 0 0 / 0.08);
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 12%;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.3) 0%,
+      rgb(255 255 255 / 0.28) 46%,
+      rgb(0 0 0 / 0.14) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-4px) rotateZ(0.5deg);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@keyframes shelfi-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Tinted shimmering skeleton block. */
+@utility shelfi-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--color-secondary) 80%, transparent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.6),
+      transparent
+    );
+    animation: shelfi-shimmer 1.6s infinite;
+  }
+}
+
+/* Horizontal snap row for mobile shelves. */
+@utility shelfi-snap-row {
+  display: flex;
+  gap: 0.875rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
 }
 
 @utility shelfi-page {

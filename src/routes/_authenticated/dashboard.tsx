@@ -11,7 +11,8 @@ import {
   type ReadingResource,
 } from "@/lib/reading";
 import { BookCard } from "@/components/shelfi/book-card";
-import { EmptyState, LoadingList, PageHeader } from "@/components/shelfi/states";
+import { CompanionGreeting } from "@/components/shelfi/companion";
+import { BookGridSkeleton, EmptyState, LoadingList, PageHeader } from "@/components/shelfi/states";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -136,9 +137,9 @@ function Dashboard() {
 
   return (
     <>
-      <PageHeader
-        title={`Hello${session.fullName ? `, ${session.fullName.split(" ")[0]}` : ""}`}
-        description={`${roleLabel[primaryRole(session.roles)]} · ${session.school?.name ?? ""}`}
+      <CompanionGreeting
+        name={session.fullName ? (session.fullName.split(" ")[0] ?? "") : ""}
+        subtitle={`${roleLabel[primaryRole(session.roles)]} · ${session.school?.name ?? ""}`}
       />
       <StudentHome />
     </>
@@ -184,7 +185,7 @@ function StudentHome() {
       ]),
   });
 
-  if (progress.isLoading || recentlyAdded.isLoading) return <LoadingList rows={2} />;
+  if (progress.isLoading || recentlyAdded.isLoading) return <BookGridSkeleton count={6} />;
 
   const cover = (r: ReadingResource) =>
     r.cover_path ? (covers.data?.get(r.cover_path) ?? null) : null;
@@ -194,17 +195,26 @@ function StudentHome() {
 
   return (
     <div className="space-y-8">
-      {continuing.length > 0 ? (
-        <HomeSection title="Continue reading">
-          {continuing.map((p) => (
-            <BookCard
-              key={p.resource_id}
-              resource={p.resource}
-              coverUrl={cover(p.resource)}
-              percent={Math.round(p.percent_complete)}
-            />
-          ))}
-        </HomeSection>
+      {continuing.length > 0 && continuing[0] ? (
+        <>
+          <ContinueHero
+            resource={continuing[0].resource}
+            coverUrl={cover(continuing[0].resource)}
+            percent={Math.round(continuing[0].percent_complete)}
+          />
+          {continuing.length > 1 ? (
+            <HomeSection title="My Shelf highlights">
+              {continuing.slice(1).map((p) => (
+                <BookCard
+                  key={p.resource_id}
+                  resource={p.resource}
+                  coverUrl={cover(p.resource)}
+                  percent={Math.round(p.percent_complete)}
+                />
+              ))}
+            </HomeSection>
+          ) : null}
+        </>
       ) : (
         <EmptyState
           icon={<BookOpen className="size-5" />}

@@ -15,7 +15,7 @@ export function CoverArt({
   return (
     <div
       className={cn(
-        "flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-sm",
+        "shelfi-book flex aspect-[2/3] w-full items-center justify-center overflow-hidden bg-secondary",
         className,
       )}
     >
@@ -43,8 +43,45 @@ export function ProgressBar({ percent }: { percent: number }) {
       aria-valuemin={0}
       aria-valuemax={100}
     >
-      <div className="h-full rounded-full bg-primary" style={{ width: `${percent}%` }} />
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-teal to-accent transition-[width] duration-500"
+        style={{ width: `${percent}%` }}
+      />
     </div>
+  );
+}
+
+/** Animated ring used by the "Continue reading" hero. */
+export function ProgressRing({
+  percent,
+  size = 64,
+  children,
+}: {
+  percent: number;
+  size?: number;
+  children?: React.ReactNode;
+}) {
+  const r = size / 2 - 4;
+  const c = 2 * Math.PI * r;
+  return (
+    <span className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-secondary)" strokeWidth="4" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--color-accent)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c - (c * Math.min(100, Math.max(0, percent))) / 100}
+          style={{ transition: "stroke-dashoffset 600ms ease" }}
+        />
+      </svg>
+      <span className="absolute text-xs font-semibold text-foreground">{children}</span>
+    </span>
   );
 }
 
