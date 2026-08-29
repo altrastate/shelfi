@@ -50,9 +50,9 @@ export function EmptyState({
           {icon}
         </div>
       ) : null}
-      <h2 className="text-base font-semibold text-foreground">{title}</h2>
-      <p className="mt-2 max-w-sm text-sm text-muted-foreground">{description}</p>
-      {action ? <div className="mt-5">{action}</div> : null}
+      <h2 className="relative font-display text-base font-semibold text-foreground">{title}</h2>
+      <p className="relative mt-2 max-w-sm text-sm text-muted-foreground">{description}</p>
+      {action ? <div className="relative mt-5">{action}</div> : null}
     </div>
   );
 }
@@ -62,10 +62,10 @@ export function LoadingList({ rows = 3 }: { rows?: number }) {
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="shelfi-surface flex items-center gap-4 p-4">
-          <Skeleton className="size-12 rounded-lg" />
+          <div className="shelfi-shimmer size-12 rounded-lg" />
           <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="h-3 w-1/3" />
+            <div className="shelfi-shimmer h-4 w-2/3 rounded-md" />
+            <div className="shelfi-shimmer h-3 w-1/3 rounded-md" />
           </div>
         </div>
       ))}
@@ -73,13 +73,42 @@ export function LoadingList({ rows = 3 }: { rows?: number }) {
   );
 }
 
-export function ErrorState({ message }: { message?: string }) {
+/** Shimmering tinted cover placeholders for shelf and catalogue grids. */
+export function BookGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="shelfi-surface border-destructive/30 px-6 py-8 text-center">
-      <h2 className="text-base font-semibold text-foreground">Something went wrong</h2>
+    <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="min-w-0">
+          <div className="shelfi-shimmer aspect-[2/3] w-full rounded-lg" />
+          <div className="shelfi-shimmer mt-2 h-3 w-4/5 rounded-md" />
+          <div className="shelfi-shimmer mt-1.5 h-2.5 w-1/2 rounded-md" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ErrorState({ message, onRetry }: { message?: string; onRetry?: () => void }) {
+  return (
+    <div className="shelfi-surface border-destructive/30 px-6 py-10 text-center">
+      <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+        <span aria-hidden="true" className="text-lg font-semibold">
+          !
+        </span>
+      </div>
+      <h2 className="font-display text-base font-semibold text-foreground">Something went wrong</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         {message ?? "We couldn't load this right now. Please try again."}
       </p>
+      {onRetry ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          Try again
+        </button>
+      ) : null}
     </div>
   );
 }
