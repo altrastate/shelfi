@@ -195,17 +195,26 @@ function StudentHome() {
 
   return (
     <div className="space-y-8">
-      {continuing.length > 0 ? (
-        <HomeSection title="Continue reading">
-          {continuing.map((p) => (
-            <BookCard
-              key={p.resource_id}
-              resource={p.resource}
-              coverUrl={cover(p.resource)}
-              percent={Math.round(p.percent_complete)}
-            />
-          ))}
-        </HomeSection>
+      {continuing.length > 0 && continuing[0] ? (
+        <>
+          <ContinueHero
+            resource={continuing[0].resource}
+            coverUrl={cover(continuing[0].resource)}
+            percent={Math.round(continuing[0].percent_complete)}
+          />
+          {continuing.length > 1 ? (
+            <HomeSection title="My Shelf highlights">
+              {continuing.slice(1).map((p) => (
+                <BookCard
+                  key={p.resource_id}
+                  resource={p.resource}
+                  coverUrl={cover(p.resource)}
+                  percent={Math.round(p.percent_complete)}
+                />
+              ))}
+            </HomeSection>
+          ) : null}
+        </>
       ) : (
         <EmptyState
           icon={<BookOpen className="size-5" />}
