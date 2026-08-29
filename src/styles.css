@@ -99,13 +99,13 @@
   --warning: #b57a17;
   --warning-foreground: #faf8f3;
 
-  --border: #e5e2d9;
-  --input: #e5e2d9;
-  --ring: #163a32;
+  --border: rgb(22 58 44 / 0.1);
+  --input: rgb(22 58 44 / 0.14);
+  --ring: #0f382c;
 
-  --chart-1: #163a32;
-  --chart-2: #d99a2b;
-  --chart-3: #3f6f7d;
+  --chart-1: #0f382c;
+  --chart-2: #e59819;
+  --chart-3: #1e8e89;
   --chart-4: #9a5b34;
   --chart-5: #6b746f;
 
