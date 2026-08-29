@@ -11,7 +11,8 @@ import {
   type ReadingResource,
 } from "@/lib/reading";
 import { BookCard } from "@/components/shelfi/book-card";
-import { EmptyState, LoadingList, PageHeader } from "@/components/shelfi/states";
+import { CompanionGreeting } from "@/components/shelfi/companion";
+import { BookGridSkeleton, EmptyState, LoadingList, PageHeader } from "@/components/shelfi/states";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
