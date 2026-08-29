@@ -185,10 +185,103 @@
 }
 
 @utility shelfi-surface {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(250 247 240 / 0.92));
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
+}
+
+/* Frosted container for overlays, drawers and sticky bars. */
+@utility shelfi-glass {
+  background: rgb(255 255 255 / 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid var(--color-border);
+}
+
+/* Editorial serif for curated / featured collection headings only. */
+@utility shelfi-editorial {
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Tactile book cover: printed spine light, edge shadow, gentle hover tilt. */
+@utility shelfi-book {
+  position: relative;
+  border-radius: 0.35rem 0.75rem 0.75rem 0.35rem;
+  box-shadow:
+    0 10px 26px -8px rgb(15 56 44 / 0.28),
+    0 2px 6px -1px rgb(0 0 0 / 0.08);
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 12%;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.3) 0%,
+      rgb(255 255 255 / 0.28) 46%,
+      rgb(0 0 0 / 0.14) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-4px) rotateZ(0.5deg);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@keyframes shelfi-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Tinted shimmering skeleton block. */
+@utility shelfi-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--color-secondary) 80%, transparent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.6),
+      transparent
+    );
+    animation: shelfi-shimmer 1.6s infinite;
+  }
+}
+
+/* Horizontal snap row for mobile shelves. */
+@utility shelfi-snap-row {
+  display: flex;
+  gap: 0.875rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 0.25rem;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
 }
 
 @utility shelfi-page {
