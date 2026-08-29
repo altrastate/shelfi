@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function PageHeader({
   title,
