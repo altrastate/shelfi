@@ -15,7 +15,7 @@ export function CoverArt({
   return (
     <div
       className={cn(
-        "flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-sm",
+        "shelfi-book flex aspect-[2/3] w-full items-center justify-center overflow-hidden bg-secondary",
         className,
       )}
     >
